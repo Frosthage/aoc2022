@@ -4,6 +4,14 @@ use std::fs::create_dir;
 use regex::Regex;
 
 fn main() -> Result<(), Box<dyn Error>> {
+    let mut a: Vec<i32> = Vec::new();
+    a.push(1);
+    a.extend()
+
+
+
+
+
     Part2()
 }
 
