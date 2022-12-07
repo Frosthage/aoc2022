@@ -3,7 +3,14 @@ use std::error::Error;
 use std::fs;
 
 fn main() -> Result<(), Box<dyn Error>> {
-    Part2()
+    let v1 = vec![(1..10)];
+    let v2 = Vec::new();
+
+
+
+
+
+
 
 }
 
