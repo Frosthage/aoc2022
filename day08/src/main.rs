@@ -1,14 +1,6 @@
-use std::arch::x86_64::_mm256_blend_epi16;
 use std::cmp::{min, max};
 use std::error::Error;
 use std::fs;
-
-struct TreeLine {
-    up: Vec<u32>,
-    down: Vec<u32>,
-    left: Vec<u32>,
-    right: Vec<u32>,
-}
 
 fn get_tree_lines(x:usize, y:usize, tree: &Vec<Vec<u32>>) -> Vec<Vec<u32>> {
     let mut left = tree[y][0..x].to_vec();
