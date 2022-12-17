@@ -77,17 +77,14 @@ fn main() {
     let vec1 = bread_first_search(&input, levels, HashSet::from([input.start]));
     println!("{}", vec1.len() - 1);
 
-    let vec2 = bread_first_search(&input, vec![vec![(25,0)]], HashSet::from([(25,0)]));
-
     let min = input.input.chars().enumerate()
         .filter(|(i, c)| *c == 'a')
         .map(|(i, c)| bread_first_search(&input, vec![vec![(i % input.width, i / input.width)]], HashSet::from([(i % input.width, i / input.width)])))
+        .filter(|x| x.last().unwrap().into_iter().map(|x| input.get_char(x)).any(|x| x == 'E'))
         .map(|v| v.len() - 1)
         .min();
 
     println!("{}", min.unwrap());
-
-
 
 }
 
@@ -115,13 +112,11 @@ impl Node {
 fn bread_first_search(input: &Input, mut levels: Vec<Vec<(usize, usize)>>, mut visited_nodes: HashSet<(usize, usize)>) -> Vec<Vec<(usize, usize)>> {
     let last_level = levels.last().unwrap();
 
-    // getting a stack overflow for some reason. not sure why, but there's really no point going further
-    // as the answer for part 1 was 404
-    if levels.len() == 405 {
+    if last_level.into_iter().any(|x| input.get_char(x) == 'E') {
         return levels;
     }
 
-    if last_level.into_iter().any(|x| input.get_char(x) == 'E') {
+    if last_level.len() == 0 {
         return levels;
     }
 
