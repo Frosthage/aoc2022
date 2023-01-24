@@ -3,51 +3,74 @@ use std::error::Error;
 use std::fs;
 
 #[derive(Debug)]
-enum instruction {
-    noop,
-    addx(i32),
+enum Instruction {
+    Noop,
+    Addx(i32),
 }
 
 
 fn main() -> Result<(), Box<dyn Error>> {
-    part1()?;
-    part2()?;
+    let register_values = get_register_values()?;
+
+    part1(&register_values)?;
+    part2(&register_values)?;
     Ok(())
 }
 
-fn part2() -> Result<(), Box<dyn Error>> {
+fn get_register_values() -> Result<Vec<i32>, Box<dyn Error>> {
     let input = fs::read_to_string("input.txt")?;
 
-    let map: Vec<instruction> = input
+    let instructions= input
         .lines()
         .map(|line| {
             match line.split(' ').collect::<Vec<&str>>()[..] {
-                ["noop"] => instruction::noop,
-                ["addx", x] => instruction::addx(x.parse().unwrap()),
+                ["noop"] => Instruction::Noop,
+                ["addx", x] => Instruction::Addx(x.parse().unwrap()),
                 _ => panic!("Invalid instruction"),
             }
-        }).collect();
+        });
 
-    let mut ticks = Vec::new();
-    let mut x = 1;
+    let mut register_values = Vec::new();
+    let mut x_register = 1;
 
-    for i in map {
+    for i in instructions {
         match i {
-            instruction::noop => {
-                ticks.push(x);
+            Instruction::Noop => {
+                register_values.push(x_register);
             },
-            instruction::addx(y) => {
-                ticks.push( x);
-                ticks.push( x);
-                x += y;
+            Instruction::Addx(x) => {
+                register_values.push(x_register);
+                register_values.push(x_register);
+                x_register += x;
             }
         }
     }
+    Ok(register_values)
+}
+
+
+fn part1(register_values: &Vec<i32>) -> Result<(), Box<dyn Error>> {
+
+    let measure = HashSet::from([19, 59, 99, 139, 179, 219]);
+
+    let part1: i32 = register_values.iter()
+        .enumerate()
+        .filter(|(i, _)| measure.contains(i))
+        .map(|(i, &x)| (i as i32, x))
+        .map(|(i, x)| x * (i + 1))
+        .sum();
+
+    println!("{:?}", part1);
+
+    Ok(())
+}
+
+fn part2(register_values: &Vec<i32>) -> Result<(), Box<dyn Error>> {
 
     for y in 0..6 {
         for x in 0..40 {
             let p = x + y * 40;
-            let sprite = [ticks[p] - 1, ticks[p], ticks[p] + 1];
+            let sprite = [register_values[p] - 1, register_values[p], register_values[p] + 1];
             if sprite.contains(&(x as i32)) {
                 print!("#");
             } else {
@@ -59,49 +82,3 @@ fn part2() -> Result<(), Box<dyn Error>> {
 
     Ok(())
 }
-
-
-
-fn part1() -> Result<(), Box<dyn Error>> {
-    let input = fs::read_to_string("input.txt")?;
-
-    let map: Vec<instruction> = input
-        .lines()
-        .map(|line| {
-            match line.split(' ').collect::<Vec<&str>>()[..] {
-                ["noop"] => instruction::noop,
-                ["addx", x] => instruction::addx(x.parse().unwrap()),
-                _ => panic!("Invalid instruction"),
-            }
-        }).collect();
-
-    let mut ticks = Vec::new();
-    let mut x = 1;
-
-    for i in map {
-        match i {
-            instruction::noop => {
-                ticks.push(x);
-            },
-            instruction::addx(y) => {
-                ticks.push(x);
-                ticks.push(x);
-                x += y;
-            }
-        }
-    }
-
-    let measure = HashSet::from([19, 59, 99, 139, 179, 219]);
-
-    let part1: i32 = ticks.iter().enumerate()
-        .filter(|(i, &x)| measure.contains(i))
-        .map(|(i, &x)| (i as i32, x))
-        .map(|(i, x)| x * (i + 1))
-        .sum();
-
-    println!("{:?}", part1);
-
-    Ok(())
-}
-
-
